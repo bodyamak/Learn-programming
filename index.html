@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Academy Pro - تعلم البرمجة من الصفر للإحتراف</title>
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a1f35;
+            --bg-card-hover: #1f2545;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #7c3aed;
+            --accent-light: #a78bfa;
+            --accent-glow: #8b5cf6;
+            --cyan: #06b6d4;
+            --cyan-light: #22d3ee;
+            --green: #10b981;
+            --green-light: #34d399;
+            --orange: #f59e0b;
+            --orange-light: #fbbf24;
+            --red: #ef4444;
+            --pink: #ec4899;
+            --border: #2a3050;
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 50%;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 30px rgba(124, 58, 237, 0.3);
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-main: 'Segoe UI', 'Tajawal', 'Cairo', sans-serif;
+            --font-code: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Consolas', monospace;
+            --navbar-height: 70px;
+            --max-width: 1200px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ============ SCROLLBAR ============ */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a5070;
+        }
+
+        /* ============ NAVBAR ============ */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: var(--navbar-height);
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+        }
+        .navbar.scrolled {
+            box-shadow: var(--shadow-lg);
+            background: rgba(17, 24, 39, 0.95);
+        }
+        .navbar-inner {
+            width: 100%;
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            white-space: nowrap;
+        }
+        .nav-logo .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), var(--cyan));
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: #fff;
+            box-shadow: var(--shadow-glow);
+        }
+        .nav-logo span {
+            background: linear-gradient(135deg, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            list-style: none;
+        }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #fff;
+            background: rgba(124, 58, 237, 0.15);
+        }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            font-family: var(--font-main);
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.35);
+        }
+        .btn-primary:hover {
+            background: #6d28d9;
+            box-shadow: 0 6px 25px rgba(124, 58, 237, 0.5);
+            transform: translateY(-2px);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+        .btn-outline:hover {
+            border-color: var(--accent-light);
+            background: rgba(124, 58, 237, 0.08);
+        }
+        .btn-cyan {
+            background: var(--cyan);
+            color: #000;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+        }
+        .btn-cyan:hover {
+            background: var(--cyan-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(6, 182, 212, 0.45);
+        }
+        .btn-sm {
+            padding: 7px 14px;
+            font-size: 0.8rem;
+        }
+        .btn-lg {
+            padding: 14px 28px;
+            font-size: 1.05rem;
+            border-radius: var(--radius);
+        }
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 1001;
+        }
+        .hamburger span {
+            display: block;
+            width: 26px;
+            height: 2.5px;
+            background: var(--text-primary);
+            border-radius: 3px;
+            transition: var(--transition);
+        }
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* ============ MAIN CONTENT ============ */
+        .main-content {
+            margin-top: var(--navbar-height);
+            min-height: calc(100vh - var(--navbar-height));
+        }
+        .page {
+            display: none;
+            animation: fadeSlideIn 0.4s ease;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .section {
+            padding: 60px 0;
+        }
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-light), var(--cyan-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ============ HERO ============ */
+        .hero {
+            padding: 80px 0 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 650px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+        }
+        .hero-stats {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 50px;
+            position: relative;
+        }
+        .hero-stat {
+            text-align: center;
+        }
+        .hero-stat .number {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-light), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-stat .label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ============ CARDS ============ */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover {
+            background: var(--bg-card-hover);
+            border-color: #4a5080;
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+        .card h3 {
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .card .progress-bar-wrap {
+            margin-top: 14px;
+            background: #252b45;
+            border-radius: 20px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .card .progress-fill {
+            height: 100%;
+            border-radius: 20px;
+            background: linear-gradient(90deg, var(--accent), var(--cyan));
+            transition: width 0.6s ease;
+        }
+        .card .level-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        .level-beginner {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--green-light);
+        }
+        .level-intermediate {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--orange-light);
+        }
+        .level-advanced {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        /* ============ FEATURES ============ */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 24px;
+        }
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px 22px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        .feature-card:hover {
+            border-color: var(--accent-light);
+            box-shadow: var(--shadow-glow);
+            transform: translateY(-3px);
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 14px;
+        }
+
+        /* ============ TESTIMONIALS ============ */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .testimonial-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+        .testimonial-card .stars {
+            color: var(--orange);
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+        .testimonial-card .quote {
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-bottom: 14px;
+            line-height: 1.7;
+        }
+        .testimonial-card .author {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        .testimonial-card .role {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* ============ LESSONS PAGE ============ */
+        .lesson-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+            min-height: calc(100vh - var(--navbar-height) - 40px);
+        }
+        .lesson-sidebar {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            overflow-y: auto;
+            max-height: calc(100vh - var(--navbar-height) - 80px);
+            position: sticky;
+            top: calc(var(--navbar-height) + 20px);
+        }
+        .lesson-sidebar h4 {
+            margin-bottom: 12px;
+            font-size: 1rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.8rem;
+        }
+        .lesson-list-item {
+            display: block;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            text-decoration: none;
+        }
+        .lesson-list-item:hover,
+        .lesson-list-item.active {
+            background: rgba(124, 58, 237, 0.2);
+            color: #fff;
+        }
+        .lesson-list-item.completed {
+            color: var(--green-light);
+        }
+        .lesson-list-item .check-icon {
+            margin-right: 6px;
+        }
+        .lesson-content-area {
+            padding: 20px 0;
+        }
+        .lesson-content-area h2 {
+            font-size: 1.8rem;
+            margin-bottom: 16px;
+        }
+        .lesson-content-area .explanation {
+            color: var(--text-secondary);
+            line-height: 1.9;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+        .code-block {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 16px 0;
+            color: #e6edf3;
+            position: relative;
+            line-height: 1.6;
+        }
+        .code-block .comment {
+            color: #8b949e;
+        }
+        .code-block .keyword {
+            color: #ff7b72;
+        }
+        .code-block .string {
+            color: #a5d6ff;
+        }
+        .code-block .tag {
+            color: #7ee787;
+        }
+        .code-block .attr {
+            color: #79c0ff;
+        }
+        .code-editor-section {
+            margin: 20px 0;
+        }
+        .code-editor-section h4 {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .code-textarea {
+            width: 100%;
+            min-height: 200px;
+            background: #0d1117;
+            border: 2px solid #30363d;
+            border-radius: var(--radius);
+            color: #e6edf3;
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+            padding: 16px;
+            resize: vertical;
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+        .code-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(124, 58, 237, 0.2);
+        }
+        .preview-frame {
+            width: 100%;
+            height: 300px;
+            border: 2px solid #30363d;
+            border-radius: var(--radius);
+            background: #fff;
+            margin-top: 10px;
+        }
+        .btn-run {
+            background: var(--green);
+            color: #000;
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            border: none;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 8px 0;
+        }
+        .btn-run:hover {
+            background: var(--green-light);
+            transform: scale(1.03);
+        }
+        .challenge-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .challenge-box h4 {
+            color: var(--orange-light);
+            margin-bottom: 8px;
+        }
+
+        /* ============ PROFILE / DASHBOARD ============ */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--accent), var(--cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .profile-info h2 {
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+        }
+        .profile-info .level-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            background: rgba(124, 58, 237, 0.3);
+            color: var(--accent-light);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .stats-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .stat-box {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 14px 18px;
+            text-align: center;
+            min-width: 80px;
+        }
+        .stat-box .val {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .stat-box .lbl {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        .badges-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .badge {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            transition: var(--transition);
+        }
+        .badge.earned {
+            border-color: var(--orange);
+            background: rgba(245, 158, 11, 0.2);
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+            animation: badgeGlow 2s infinite;
+        }
+        @keyframes badgeGlow {
+            0%,
+            100% {
+                box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(245, 158, 11, 0.6);
+            }
+        }
+
+        /* ============ PROJECTS ============ */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .project-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        .project-card:hover {
+            border-color: var(--accent-light);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        .project-card .project-img {
+            height: 180px;
+            background: linear-gradient(135deg, #1e2a4a, #1a2540);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+        .project-card .project-body {
+            padding: 18px;
+        }
+        .project-card .project-body h3 {
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+        }
+        .project-card .project-body p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 14px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin: 4px 2px;
+            background: rgba(124, 58, 237, 0.2);
+            color: var(--accent-light);
+        }
+
+        /* ============ MODAL ============ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 30px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: var(--shadow-lg);
+            animation: modalPop 0.3s ease;
+        }
+        @keyframes modalPop {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        .modal h3 {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .modal .form-group {
+            margin-bottom: 16px;
+        }
+        .modal label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .modal input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+        .modal input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.2);
+        }
+        .modal .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        .modal .switch-link {
+            text-align: center;
+            margin-top: 14px;
+            color: var(--accent-light);
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .modal .close-btn {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .modal .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        /* ============ FOOTER ============ */
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            padding: 40px 0 20px;
+            margin-top: 40px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .footer-col h4 {
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        .footer-col a {
+            display: block;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            transition: var(--transition);
+        }
+        .footer-col a:hover {
+            color: #fff;
+        }
+        .footer-bottom {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 3000;
+            background: var(--green);
+            color: #000;
+            padding: 14px 22px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.4s ease, fadeOut 0.4s ease 2.5s forwards;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+        }
+        @keyframes slideUp {
+            from {
+                transform: translateY(80px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 900px) {
+            .hamburger {
+                display: flex;
+            }
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 280px;
+                height: 100vh;
+                background: var(--bg-secondary);
+                flex-direction: column;
+                padding: 90px 20px 30px;
+                gap: 4px;
+                transition: right 0.35s ease;
+                box-shadow: var(--shadow-lg);
+                z-index: 999;
+            }
+            .nav-links.open {
+                right: 0;
+            }
+            .nav-links a {
+                padding: 12px 16px;
+                font-size: 1rem;
+            }
+            .lesson-layout {
+                grid-template-columns: 1fr;
+            }
+            .lesson-sidebar {
+                position: static;
+                max-height: none;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                padding: 12px;
+            }
+            .lesson-sidebar h4 {
+                width: 100%;
+            }
+            .lesson-list-item {
+                font-size: 0.8rem;
+                padding: 8px 10px;
+            }
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .hero p {
+                font-size: 1rem;
+            }
+            .cards-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .features-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 550px) {
+            .cards-grid,
+            .features-grid,
+            .projects-grid,
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero h1 {
+                font-size: 1.6rem;
+            }
+            .hero-stats {
+                gap: 16px;
+            }
+            .hero-stat .number {
+                font-size: 1.4rem;
+            }
+            .navbar-inner {
+                padding: 0 12px;
+            }
+            .nav-logo {
+                font-size: 1.1rem;
+            }
+            .nav-logo .logo-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 1rem;
+            }
+            .btn {
+                padding: 8px 14px;
+                font-size: 0.8rem;
+            }
+            .btn-lg {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .stats-row {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== NAVBAR ==================== -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-inner">
+            <a href="#" class="nav-logo" onclick="navigateTo('home')">
+                <div class="logo-icon">{ }</div>
+                <span>Code Academy Pro</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a onclick="navigateTo('home')" class="active" data-nav="home">الرئيسية</a></li>
+                <li><a onclick="navigateTo('paths')" data-nav="paths">المسارات</a></li>
+                <li><a onclick="navigateTo('projects')" data-nav="projects">المشاريع</a></li>
+                <li><a onclick="navigateTo('profile')" data-nav="profile">لوحة التحكم</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="btn btn-outline btn-sm" onclick="openModal('login')" id="btnLogin">تسجيل الدخول</button>
+                <button class="btn btn-primary btn-sm" onclick="openModal('register')" id="btnRegister">إنشاء حساب</button>
+                <button class="btn btn-outline btn-sm" style="display:none;" id="btnLogout" onclick="logout()">تسجيل الخروج</button>
+                <button class="hamburger" id="hamburger" aria-label="القائمة">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <div class="main-content">
+
+        <!-- HOME PAGE -->
+        <div class="page active" id="page-home">
+            <!-- Hero -->
+            <section class="hero">
+                <div class="container">
+                    <h1>ابدأ رحلتك في <span class="gradient-text">تعلم البرمجة</span><br>من الصفر للإحتراف</h1>
+                    <p>منصة تفاعلية تقدم لك مسارات تعليمية شاملة، محرر أكواد مباشر، مشاريع حقيقية، وشهادات معتمدة - كل ما تحتاجه لتصبح مطورًا محترفًا.</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary btn-lg" onclick="navigateTo('paths')">🚀 ابدأ الآن مجانًا</button>
+                        <button class="btn btn-outline btn-lg" onclick="navigateTo('projects')">📁 استعرض المشاريع</button>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="hero-stat"><div class="number">+50,000</div><div class="label">طالب مسجل</div></div>
+                        <div class="hero-stat"><div class="number">+200</div><div class="label">درس تفاعلي</div></div>
+                        <div class="hero-stat"><div class="number">+30</div><div class="label">مشروع عملي</div></div>
+                        <div class="hero-stat"><div class="number">4.9</div><div class="label">⭐ تقييم المستخدمين</div></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Learning Paths Preview -->
+            <section class="section" id="paths-preview">
+                <div class="container">
+                    <h2 class="section-title">المسارات <span class="gradient-text">التعليمية</span></h2>
+                    <p class="section-subtitle">اختر مسارك وابدأ التعلم بخطوات منظمة من الأساسيات حتى المستوى المتقدم</p>
+                    <div class="cards-grid">
+                        <div class="card" onclick="selectPath('web')">
+                            <div class="card-icon" style="background:rgba(124,58,237,0.2);">🌐</div>
+                            <h3>تطوير الويب</h3>
+                            <p>HTML, CSS, JavaScript, React - ابنِ مواقع ويب احترافية كاملة</p>
+                            <span class="level-tag level-beginner">مبتدئ إلى متقدم</span>
+                            <div class="progress-bar-wrap"><div class="progress-fill" style="width:0%;" id="prog-web"></div></div>
+                            <small style="color:var(--text-muted);font-size:0.75rem;">24 درسًا</small>
+                        </div>
+                        <div class="card" onclick="selectPath('games')">
+                            <div class="card-icon" style="background:rgba(236,72,153,0.2);">🎮</div>
+                            <h3>تطوير الألعاب</h3>
+                            <p>تعلم بناء ألعاب ثنائية وثلاثية الأبعاد باستخدام JavaScript و Unity</p>
+                            <span class="level-tag level-intermediate">متوسط إلى متقدم</span>
+                            <div class="progress-bar-wrap"><div class="progress-fill" style="width:0%;" id="prog-games"></div></div>
+                            <small style="color:var(--text-muted);font-size:0.75rem;">18 درسًا</small>
+                        </div>
+                        <div class="card" onclick="selectPath('mobile')">
+                            <div class="card-icon" style="background:rgba(6,182,212,0.2);">📱</div>
+                            <h3>تطبيقات الهاتف</h3>
+                            <p>React Native & Flutter - طور تطبيقات تعمل على Android و iOS</p>
+                            <span class="level-tag level-intermediate">متوسط إلى متقدم</span>
+                            <div class="progress-bar-wrap"><div class="progress-fill" style="width:0%;" id="prog-mobile"></div></div>
+                            <small style="color:var(--text-muted);font-size:0.75rem;">20 درسًا</small>
+                        </div>
+                        <div class="card" onclick="selectPath('algorithms')">
+                            <div class="card-icon" style="background:rgba(16,185,129,0.2);">🧠</div>
+                            <h3>أساسيات البرمجة والخوارزميات</h3>
+                            <p>أساسيات التفكير البرمجي، هياكل البيانات، وحل المشكلات</p>
+                            <span class="level-tag level-beginner">مبتدئ</span>
+                            <div class="progress-bar-wrap"><div class="progress-fill" style="width:0%;" id="prog-algorithms"></div></div>
+                            <small style="color:var(--text-muted);font-size:0.75rem;">16 درسًا</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features -->
+            <section class="section" style="background:var(--bg-secondary);">
+                <div class="container">
+                    <h2 class="section-title">لماذا <span class="gradient-text">Code Academy Pro؟</span></h2>
+                    <p class="section-subtitle">مميزات تجعل تجربة التعلم فريدة وممتعة</p>
+                    <div class="features-grid">
+                        <div class="feature-card"><div class="feature-icon">💻</div><h4>محرر أكواد تفاعلي</h4><p>جرب الأكواد مباشرة داخل المتصفح دون الحاجة لتثبيت أي برامج</p></div>
+                        <div class="feature-card"><div class="feature-icon">🏆</div><h4>نظام نقاط وشارات</h4><p>اكسب XP وارفع مستواك مع شارات إنجاز تحفيزية</p></div>
+                        <div class="feature-card"><div class="feature-icon">📊</div><h4>تتبع التقدم</h4><p>شريط تقدم لكل مسار ودروس مرتبة بشكل منطقي</p></div>
+                        <div class="feature-card"><div class="feature-icon">🎯</div><h4>تحديات عملية</h4><p>تحدٍ بعد كل درس لتطبيق ما تعلمته فورًا</p></div>
+                        <div class="feature-card"><div class="feature-icon">📱</div><h4>متجاوب 100%</h4><p>يعمل بكفاءة على الهاتف والكمبيوتر والجهاز اللوحي</p></div>
+                        <div class="feature-card"><div class="feature-icon">👥</div><h4>لوحة المتصدرين</h4><p>تنافس مع زملائك وشاهد ترتيبك بين الطلاب</p></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Testimonials -->
+            <section class="section">
+                <div class="container">
+                    <h2 class="section-title">آراء <span class="gradient-text">المستخدمين</span></h2>
+                    <p class="section-subtitle">ماذا يقول طلابنا عن تجربتهم</p>
+                    <div class="testimonials-grid">
+                        <div class="testimonial-card"><div class="stars">⭐⭐⭐⭐⭐</div><p class="quote">"أفضل منصة لتعلم البرمجة بالعربية! المحرر التفاعلي ساعدني كثيرًا في فهم الكود."</p><div class="author">أحمد محمد</div><div class="role">مطور ويب مبتدئ</div></div>
+                        <div class="testimonial-card"><div class="stars">⭐⭐⭐⭐⭐</div><p class="quote">"نظام النقاط والشارات خلاني متحمس أكمل كل يوم، والمشاريع عملية جدًا."</p><div class="author">سارة خالد</div><div class="role">طالبة هندسة برمجيات</div></div>
+                        <div class="testimonial-card"><div class="stars">⭐⭐⭐⭐⭐</div><p class="quote">"انتقلت من الصفر لوظيفة مطور بفضل المسارات المنظمة والتحديات اليومية."</p><div class="author">عمر ناصر</div><div class="role">مطور Front-End</div></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- PATHS PAGE -->
+        <div class="page" id="page-paths">
+            <section class="section">
+                <div class="container">
+                    <h2 class="section-title">المسارات <span class="gradient-text">التعليمية</span></h2>
+                    <p class="section-subtitle">اختر مسارًا وابدأ رحلة التعلم الآن</p>
+                    <div class="cards-grid" id="pathsFullGrid"></div>
+                </div>
+            </section>
+        </div>
+
+        <!-- LESSON PAGE -->
+        <div class="page" id="page-lesson">
+            <div class="container">
+                <div class="lesson-layout">
+                    <aside class="lesson-sidebar" id="lessonSidebar"></aside>
+                    <div class="lesson-content-area" id="lessonContent"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROJECTS PAGE -->
+        <div class="page" id="page-projects">
+            <section class="section">
+                <div class="container">
+                    <h2 class="section-title">المشاريع <span class="gradient-text">العملية</span></h2>
+                    <p class="section-subtitle">طبق ما تعلمته ببناء مشاريع حقيقية</p>
+                    <div class="projects-grid" id="projectsGrid"></div>
+                </div>
+            </section>
+        </div>
+
+        <!-- PROFILE PAGE -->
+        <div class="page" id="page-profile">
+            <section class="section">
+                <div class="container" id="profileContainer">
+                    <div style="text-align:center;padding:60px 0;" id="profileEmpty">
+                        <h2>🔒 يرجى تسجيل الدخول</h2>
+                        <p style="color:var(--text-muted);margin:16px 0;">قم بتسجيل الدخول أو إنشاء حساب جديد للوصول إلى لوحة التحكم</p>
+                        <button class="btn btn-primary btn-lg" onclick="openModal('login')">تسجيل الدخول</button>
+                    </div>
+                    <div id="profileContent" style="display:none;"></div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL ==================== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modalBox">
+            <button class="close-btn" onclick="closeModal()">✕</button>
+            <h3 id="modalTitle">تسجيل الدخول</h3>
+            <form id="modalForm" onsubmit="handleAuth(event)">
+                <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="authEmail" required placeholder="example@email.com"></div>
+                <div class="form-group"><label>كلمة المرور</label><input type="password" id="authPassword" required placeholder="********" minlength="4"></div>
+                <div class="form-group" id="nameGroup" style="display:none;"><label>الاسم</label><input type="text" id="authName" placeholder="أدخل اسمك"></div>
+                <button type="submit" class="btn btn-primary" id="modalSubmitBtn">تسجيل الدخول</button>
+            </form>
+            <div class="switch-link" id="switchLink" onclick="toggleModalMode()">ليس لديك حساب؟ <strong>أنشئ حسابًا</strong></div>
+        </div>
+    </div>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col"><h4>Code Academy Pro</h4><p style="color:var(--text-muted);font-size:0.9rem;">منصة تعليم برمجة تفاعلية بالعربية</p></div>
+                <div class="footer-col"><h4>روابط سريعة</h4><a onclick="navigateTo('home')">الرئيسية</a><a onclick="navigateTo('paths')">المسارات</a><a onclick="navigateTo('projects')">المشاريع</a></div>
+                <div class="footer-col"><h4>تواصل معنا</h4><a href="#">contact@codeacademypro.com</a><a href="#">تويتر</a><a href="#">لينكد إن</a></div>
+            </div>
+            <div class="footer-bottom">© 2026 Code Academy Pro. جميع الحقوق محفوظة.</div>
+        </div>
+    </footer>
+
+    <!-- ==================== TOAST CONTAINER ==================== -->
+    <div id="toastContainer"></div>
+
+    <script>
+        // ==================== DATA STORE ====================
+        const pathsData = [
+            { id: 'web', title: 'تطوير الويب', icon: '🌐', desc: 'HTML, CSS, JavaScript, React', lessons: 24,
+                color: '#7c3aed', level: 'مبتدئ إلى متقدم', levelClass: 'level-beginner' },
+            { id: 'games', title: 'تطوير الألعاب', icon: '🎮', desc: 'JavaScript و Unity', lessons: 18, color: '#ec4899',
+                level: 'متوسط إلى متقدم', levelClass: 'level-intermediate' },
+            { id: 'mobile', title: 'تطبيقات الهاتف', icon: '📱', desc: 'React Native & Flutter', lessons: 20,
+                color: '#06b6d4', level: 'متوسط إلى متقدم', levelClass: 'level-intermediate' },
+            { id: 'algorithms', title: 'أساسيات البرمجة والخوارزميات', icon: '🧠', desc: 'التفكير البرمجي وهياكل البيانات',
+                lessons: 16, color: '#10b981', level: 'مبتدئ', levelClass: 'level-beginner' },
+        ];
+
+        const projectsData = [
+            { id: 'calc', title: 'آلة حاسبة', icon: '🧮', desc: 'ابنِ آلة حاسبة كاملة باستخدام HTML, CSS, JavaScript',
+                tags: ['HTML', 'CSS', 'JS'], color: '#7c3aed' },
+            { id: 'game', title: 'لعبة بسيطة', icon: '🎯', desc: 'لعبة تخمين الأرقام أو لعبة X/O تفاعلية',
+                tags: ['JavaScript', 'Canvas'], color: '#ec4899' },
+            { id: 'portfolio', title: 'موقع شخصي', icon: '💼', desc: 'موقع Portfolio احترافي لعرض أعمالك ومهاراتك',
+                tags: ['HTML', 'CSS', 'React'], color: '#06b6d4' },
+            { id: 'todo', title: 'تطبيق مهام', icon: '✅', desc: 'تطبيق To-Do List مع إمكانية الحفظ والإكمال',
+                tags: ['React', 'LocalStorage'], color: '#10b981' },
+            { id: 'weather', title: 'تطبيق الطقس', icon: '🌤️', desc: 'تطبيق يعرض حالة الطقس باستخدام API خارجي',
+                tags: ['JavaScript', 'API'], color: '#f59e0b' },
+            { id: 'chat', title: 'غرفة محادثة', icon: '💬', desc: 'تطبيق محادثة بسيط باستخدام WebSocket', tags: ['Node.js',
+                    'Socket.io'
+                ], color: '#8b5cf6' },
+        ];
+
+        // Generate lesson names per path
+        function getLessonsForPath(pathId) {
+            const base = {
+                web: [
+                    'مقدمة إلى HTML',
+                    'هيكل صفحة HTML',
+                    'العناوين والفقرات',
+                    'الروابط والصور',
+                    'القوائم والجداول',
+                    'النماذج (Forms)',
+                    'مقدمة إلى CSS',
+                    'الألوان والخطوط',
+                    'نموذج الصندوق',
+                    'Flexbox',
+                    'CSS Grid',
+                    'التصميم المتجاوب',
+                    'مقدمة إلى JavaScript',
+                    'المتغيرات وأنواع البيانات',
+                    'الدوال والشروط',
+                    'الحلقات التكرارية',
+                    'التعامل مع DOM',
+                    'الأحداث (Events)',
+                    'مقدمة إلى React',
+                    'المكونات (Components)',
+                    'الـ Props والـ State',
+                    'إدارة الحالة',
+                    'التوجيه (Routing)',
+                    'مشروع نهائي متكامل'
+                ],
+                games: [
+                    'مقدمة تطوير الألعاب', 'أساسيات Canvas', 'رسم الأشكال', 'الحركة والتحريك',
+                    'اكتشاف التصادم', 'الفيزياء البسيطة', 'التحكم بلوحة المفاتيح', 'المؤثرات الصوتية',
+                    'بناء لعبة كاملة', 'مقدمة Unity', 'واجهة Unity', 'الـ Scripts',
+                    'المشاهد والانتقالات', 'الرسوم المتحركة', 'الذكاء الاصطناعي البسيط', 'نظام النقاط',
+                    'حفظ وتحميل البيانات', 'مشروع لعبة نهائية'
+                ],
+                mobile: [
+                    'مقدمة تطوير الهاتف', 'إعداد البيئة', 'أساسيات React Native', 'المكونات الأساسية',
+                    'التنسيق والتصميم', 'التنقل بين الشاشات', 'إدارة الحالة', 'التعامل مع API',
+                    'التخزين المحلي', 'الإشعارات', 'مقدمة Flutter', 'الـ Widgets',
+                    'التنسيق في Flutter', 'إدارة الحالة في Flutter', 'التعامل مع قواعد البيانات',
+                    'نشر التطبيق', 'الاختبارات', 'مشروع تطبيق كامل', 'تحسين الأداء', 'الأمان'
+                ],
+                algorithms: [
+                    'مقدمة التفكير البرمجي', 'المتغيرات والثوابت', 'أنواع البيانات', 'العوامل الحسابية',
+                    'الشروط if/else', 'الحلقات for/while', 'المصفوفات', 'الدوال',
+                    'التكرار (Recursion)', 'البحث الخطي', 'البحث الثنائي', 'الترتيب (Sorting)',
+                    'هياكل البيانات', 'المكدس والطابور', 'القوائم المرتبطة', 'مشروع تطبيقي'
+                ],
+            };
+            return base[pathId] || base['web'];
+        }
+
+        // ==================== STATE ====================
+        let currentUser = JSON.parse(localStorage.getItem('codeAcademyUser')) || null;
+        let userProgress = JSON.parse(localStorage.getItem('codeAcademyProgress')) || {}; // { pathId: { completedLessons:
+        // [], xp: 0 } }
+        let allUsers = JSON.parse(localStorage.getItem('codeAcademyAllUsers')) || []; // [{name, email, xp, badges}]
+        let currentPath = null;
+        let currentLessonIndex = 0;
+        let modalMode = 'login';
+
+        // ==================== INIT ====================
+        function init() {
+            updateNavButtons();
+            renderPathsCards();
+            renderProjectsCards();
+            if (currentUser) {
+                updateAllProgressBars();
+                renderProfileContent();
+            }
+            // Ensure home page shows
+     
