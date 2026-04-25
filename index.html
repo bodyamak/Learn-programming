@@ -1362,4 +1362,442 @@
                 renderProfileContent();
             }
             // Ensure home page shows
-     
+            document.getElementById('page-home').classList.add('active');
+        }
+
+        function updateNavButtons() {
+            const btnLogin = document.getElementById('btnLogin');
+            const btnRegister = document.getElementById('btnRegister');
+            const btnLogout = document.getElementById('btnLogout');
+            if (currentUser) {
+                btnLogin.style.display = 'none';
+                btnRegister.style.display = 'none';
+                btnLogout.style.display = 'inline-flex';
+                btnLogout.textContent = '👤 ' + currentUser.name + ' | خروج';
+            } else {
+                btnLogin.style.display = 'inline-flex';
+                btnRegister.style.display = 'inline-flex';
+                btnLogout.style.display = 'none';
+            }
+        }
+
+        // ==================== NAVIGATION ====================
+        function navigateTo(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById('page-' + page);
+            if (target) target.classList.add('active');
+
+            // Update nav links
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            const navLink = document.querySelector(`[data-nav="${page}"]`);
+            if (navLink) navLink.classList.add('active');
+
+            // Close mobile menu
+            document.getElementById('navLinks').classList.remove('open');
+            document.getElementById('hamburger').classList.remove('active');
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Refresh dynamic content
+            if (page === 'paths') renderPathsCards();
+            if (page === 'projects') renderProjectsCards();
+            if (page === 'profile') {
+                if (currentUser) {
+                    document.getElementById('profileEmpty').style.display = 'none';
+                    document.getElementById('profileContent').style.display = 'block';
+                    renderProfileContent();
+                } else {
+                    document.getElementById('profileEmpty').style.display = 'block';
+                    document.getElementById('profileContent').style.display = 'none';
+                }
+            }
+        }
+
+        // ==================== RENDER PATHS ====================
+        function renderPathsCards() {
+            const grid = document.getElementById('pathsFullGrid');
+            const isFullPage = grid && grid.parentElement;
+            let html = '';
+            pathsData.forEach(p => {
+                const prog = userProgress[p.id] || { completedLessons: [], xp: 0 };
+                const pct = p.lessons > 0 ? Math.round((prog.completedLessons.length / p.lessons) * 100) : 0;
+                html += `
+                <div class="card" onclick="selectPath('${p.id}')">
+                    <div class="card-icon" style="background:${p.color}22;">${p.icon}</div>
+                    <h3>${p.title}</h3>
+                    <p>${p.desc}</p>
+                    <span class="level-tag ${p.levelClass}">${p.level}</span>
+                    <div class="progress-bar-wrap"><div class="progress-fill" style="width:${pct}%;" id="prog-${p.id}"></div></div>
+                    <small style="color:var(--text-muted);font-size:0.75rem;">${p.lessons} درسًا | ${pct}% مكتمل</small>
+                </div>`;
+            });
+            if (grid) grid.innerHTML = html;
+            // Also update preview grid if on home page
+            const previewGrid = document.querySelector('#paths-preview .cards-grid');
+            if (previewGrid && !isFullPage) {
+                previewGrid.innerHTML = html;
+            }
+            updateAllProgressBars();
+        }
+
+        function updateAllProgressBars() {
+            pathsData.forEach(p => {
+                const prog = userProgress[p.id] || { completedLessons: [], xp: 0 };
+                const pct = p.lessons > 0 ? Math.round((prog.completedLessons.length / p.lessons) * 100) : 0;
+                const bars = document.querySelectorAll(`#prog-${p.id}`);
+                bars.forEach(bar => { bar.style.width = pct + '%'; });
+            });
+        }
+
+        // ==================== SELECT PATH & LESSONS ====================
+        function selectPath(pathId) {
+            currentPath = pathId;
+            currentLessonIndex = 0;
+            if (!userProgress[pathId]) userProgress[pathId] = { completedLessons: [], xp: 0 };
+            const lessons = getLessonsForPath(pathId);
+            // Navigate to lesson page
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-lesson').classList.add('active');
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            renderLessonSidebar(pathId, lessons);
+            renderLessonContent(pathId, lessons, 0);
+        }
+
+        function renderLessonSidebar(pathId, lessons) {
+            const sidebar = document.getElementById('lessonSidebar');
+            const completed = (userProgress[pathId] && userProgress[pathId].completedLessons) || [];
+            let html = `<h4>📚 دروس المسار</h4>`;
+            lessons.forEach((l, i) => {
+                const isComp = completed.includes(i);
+                const isActive = i === currentLessonIndex;
+                html += `
+                <div class="lesson-list-item${isActive ? ' active' : ''}${isComp ? ' completed' : ''}"
+                     onclick="goToLesson(${i})">
+                    ${isComp ? '<span class="check-icon">✅</span>' : '<span style="opacity:0.5;">○</span>'}
+                    الدرس ${i+1}: ${l}
+                </div>`;
+            });
+            sidebar.innerHTML = html;
+        }
+
+        function goToLesson(index) {
+            currentLessonIndex = index;
+            const lessons = getLessonsForPath(currentPath);
+            renderLessonSidebar(currentPath, lessons);
+            renderLessonContent(currentPath, lessons, index);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderLessonContent(pathId, lessons, index) {
+            const area = document.getElementById('lessonContent');
+            const lessonTitle = lessons[index];
+            const isCompleted = (userProgress[pathId] && userProgress[pathId].completedLessons.includes(index));
+            const sampleCode = getSampleCode(pathId, index);
+            const explanation = getExplanation(pathId, index);
+
+            let html = `
+            <h2>📖 الدرس ${index+1}: ${lessonTitle}</h2>
+            <div class="explanation">${explanation}</div>
+            ${sampleCode ? `
+            <div class="code-block"><pre>${escapeHtml(sampleCode)}</pre></div>
+            <div class="code-editor-section">
+                <h4>🖊️ جرب الكود بنفسك</h4>
+                <textarea class="code-textarea" id="liveCodeEditor" spellcheck="false">${escapeHtml(sampleCode)}</textarea>
+                <button class="btn-run" onclick="runCode()">▶️ تشغيل الكود</button>
+                <iframe class="preview-frame" id="previewFrame" sandbox="allow-scripts allow-same-origin"></iframe>
+            </div>` : ''}
+            <div class="challenge-box">
+                <h4>🏆 تحدي عملي</h4>
+                <p>${getChallenge(pathId, index)}</p>
+            </div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;">
+                ${index > 0 ? `<button class="btn btn-outline" onclick="goToLesson(${index-1})">⬅️ الدرس السابق</button>` : ''}
+                ${!isCompleted ? `<button class="btn btn-primary" onclick="completeLesson(${index})">✅ إكمال الدرس (+50 XP)</button>` : `<span style="color:var(--green-light);font-weight:600;">✅ تم الإكمال</span>`}
+                ${index < lessons.length-1 ? `<button class="btn btn-cyan" onclick="goToLesson(${index+1})">الدرس التالي ➡️</button>` : `<span style="color:var(--accent-light);">🎉 هذا آخر درس في المسار!</span>`}
+            </div>`;
+            area.innerHTML = html;
+        }
+
+        function completeLesson(index) {
+            if (!currentUser) {
+                showToast('⚠️ يرجى تسجيل الدخول أولاً لحفظ التقدم');
+                openModal('login');
+                return;
+            }
+            const pathId = currentPath;
+            if (!userProgress[pathId]) userProgress[pathId] = { completedLessons: [], xp: 0 };
+            if (!userProgress[pathId].completedLessons.includes(index)) {
+                userProgress[pathId].completedLessons.push(index);
+                userProgress[pathId].xp = (userProgress[pathId].xp || 0) + 50;
+                currentUser.xp = (currentUser.xp || 0) + 50;
+                currentUser.level = Math.floor(currentUser.xp / 200) + 1;
+                // Check badges
+                checkBadges();
+                saveAll();
+                showToast('🎉 أحسنت! +50 XP | الدرس مكتمل');
+                const lessons = getLessonsForPath(pathId);
+                renderLessonSidebar(pathId, lessons);
+                renderLessonContent(pathId, lessons, index);
+                renderPathsCards();
+                updateAllProgressBars();
+                updateNavButtons();
+            }
+        }
+
+        function checkBadges() {
+            if (!currentUser.badges) currentUser.badges = [];
+            const totalCompleted = Object.values(userProgress).reduce((sum, p) => sum + (p.completedLessons || []).length,
+            0);
+            if (totalCompleted >= 1 && !currentUser.badges.includes('first-lesson')) currentUser.badges.push(
+                'first-lesson');
+            if (totalCompleted >= 5 && !currentUser.badges.includes('5-lessons')) currentUser.badges.push('5-lessons');
+            if (totalCompleted >= 10 && !currentUser.badges.includes('10-lessons')) currentUser.badges.push('10-lessons');
+            if (currentUser.xp >= 500 && !currentUser.badges.includes('500xp')) currentUser.badges.push('500xp');
+            if (currentUser.xp >= 1000 && !currentUser.badges.includes('1000xp')) currentUser.badges.push('1000xp');
+        }
+
+        function runCode() {
+            const code = document.getElementById('liveCodeEditor').value;
+            const iframe = document.getElementById('previewFrame');
+            const blob = new Blob([code], { type: 'text/html' });
+            iframe.src = URL.createObjectURL(blob);
+        }
+
+        // ==================== PROJECTS ====================
+        function renderProjectsCards() {
+            const grid = document.getElementById('projectsGrid');
+            if (!grid) return;
+            grid.innerHTML = projectsData.map(p => `
+                <div class="project-card">
+                    <div class="project-img" style="background:linear-gradient(135deg, ${p.color}33, ${p.color}11);">${p.icon}</div>
+                    <div class="project-body">
+                        <h3>${p.title}</h3>
+                        <p>${p.desc}</p>
+                        <div>${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ==================== PROFILE ====================
+        function renderProfileContent() {
+            const container = document.getElementById('profileContent');
+            if (!currentUser) return;
+            const totalCompleted = Object.values(userProgress).reduce((sum, p) => sum + (p.completedLessons || []).length,
+            0);
+            const totalXP = currentUser.xp || 0;
+            const level = Math.floor(totalXP / 200) + 1;
+            const xpToNext = 200 - (totalXP % 200);
+            const badges = currentUser.badges || [];
+            const badgeEmojis = { 'first-lesson': '🌟', '5-lessons': '🔥', '10-lessons': '💎', '500xp': '⚡',
+                '1000xp': '👑' };
+
+            // Leaderboard
+            const sortedUsers = [...allUsers].sort((a, b) => (b.xp || 0) - (a.xp || 0)).slice(0, 10);
+            const myRank = sortedUsers.findIndex(u => u.email === currentUser.email) + 1;
+
+            container.innerHTML = `
+            <div class="profile-header">
+                <div class="avatar">${currentUser.name.charAt(0).toUpperCase()}</div>
+                <div class="profile-info">
+                    <h2>${currentUser.name}</h2>
+                    <span class="level-badge">🏅 المستوى ${level}</span>
+                    <div class="stats-row">
+                        <div class="stat-box"><div class="val">${totalXP}</div><div class="lbl">نقاط XP</div></div>
+                        <div class="stat-box"><div class="val">${totalCompleted}</div><div class="lbl">دروس مكتملة</div></div>
+                        <div class="stat-box"><div class="val">#${myRank || '-'}</div><div class="lbl">الترتيب</div></div>
+                        <div class="stat-box"><div class="val">${xpToNext}</div><div class="lbl">XP للمستوى التالي</div></div>
+                    </div>
+                    <div style="margin-top:12px;"><strong>الشارات:</strong>
+                        <div class="badges-row">
+                            ${badges.length>0 ? badges.map(b=>`<span class="badge earned" title="${b}">${badgeEmojis[b]||'🏅'}</span>`).join('') : '<span style="color:var(--text-muted);">لا توجد شارات بعد</span>'}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h3 style="margin-bottom:16px;">🏆 لوحة المتصدرين</h3>
+            <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;">
+                ${sortedUsers.map((u,i)=>`
+                    <div style="display:flex;align-items:center;gap:12px;padding:10px;border-bottom:1px solid var(--border);${u.email===currentUser.email?'background:rgba(124,58,237,0.15);border-radius:8px;':''}">
+                        <strong>#${i+1}</strong>
+                        <span>${u.name}</span>
+                        <span style="margin-right:auto;color:var(--accent-light);">${u.xp||0} XP</span>
+                        <span>🏅 م.${Math.floor((u.xp||0)/200)+1}</span>
+                    </div>
+                `).join('')}
+            </div>`;
+        }
+
+        // ==================== AUTH ====================
+        function openModal(mode) {
+            modalMode = mode;
+            document.getElementById('modalOverlay').classList.add('open');
+            document.getElementById('modalTitle').textContent = mode === 'login' ? 'تسجيل الدخول' : 'إنشاء حساب جديد';
+            document.getElementById('modalSubmitBtn').textContent = mode === 'login' ? 'تسجيل الدخول' : 'إنشاء الحساب';
+            document.getElementById('nameGroup').style.display = mode === 'register' ? 'block' : 'none';
+            document.getElementById('switchLink').innerHTML = mode === 'login' ?
+                'ليس لديك حساب؟ <strong>أنشئ حسابًا</strong>' : 'لديك حساب بالفعل؟ <strong>سجل دخولك</strong>';
+            document.getElementById('modalForm').reset();
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('open');
+        }
+
+        function toggleModalMode() {
+            openModal(modalMode === 'login' ? 'register' : 'login');
+        }
+
+        function handleAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value.trim();
+            const name = document.getElementById('authName').value.trim();
+
+            if (modalMode === 'register') {
+                if (!name) { showToast('⚠️ يرجى إدخال الاسم'); return; }
+                if (allUsers.find(u => u.email === email)) { showToast('⚠️ البريد الإلكتروني مستخدم بالفعل'); return; }
+                const newUser = { name, email, password, xp: 0, level: 1, badges: [] };
+                allUsers.push(newUser);
+                currentUser = newUser;
+                userProgress = {};
+                localStorage.setItem('codeAcademyAllUsers', JSON.stringify(allUsers));
+                localStorage.setItem('codeAcademyUser', JSON.stringify(currentUser));
+                localStorage.setItem('codeAcademyProgress', JSON.stringify(userProgress));
+                closeModal();
+                updateNavButtons();
+                updateAllProgressBars();
+                renderPathsCards();
+                showToast('🎉 تم إنشاء الحساب بنجاح! مرحبًا ' + name);
+                navigateTo('profile');
+            } else {
+                const found = allUsers.find(u => u.email === email && u.password === password);
+                if (!found) { showToast('⚠️ البريد الإلكتروني أو كلمة المرور غير صحيحة'); return; }
+                currentUser = found;
+                userProgress = JSON.parse(localStorage.getItem('codeAcademyProgress_' + email)) || {};
+                localStorage.setItem('codeAcademyUser', JSON.stringify(currentUser));
+                localStorage.setItem('codeAcademyProgress', JSON.stringify(userProgress));
+                closeModal();
+                updateNavButtons();
+                updateAllProgressBars();
+                renderPathsCards();
+                showToast('👋 مرحبًا بعودتك ' + found.name + '!');
+                navigateTo('profile');
+            }
+        }
+
+        function logout() {
+            if (currentUser) {
+                // Save progress per user
+                localStorage.setItem('codeAcademyProgress_' + currentUser.email, JSON.stringify(userProgress));
+                // Update user in allUsers
+                const idx = allUsers.findIndex(u => u.email === currentUser.email);
+                if (idx >= 0) {
+                    allUsers[idx].xp = currentUser.xp;
+                    allUsers[idx].level = currentUser.level;
+                    allUsers[idx].badges = currentUser.badges;
+                }
+                localStorage.setItem('codeAcademyAllUsers', JSON.stringify(allUsers));
+            }
+            currentUser = null;
+            userProgress = {};
+            localStorage.removeItem('codeAcademyUser');
+            localStorage.removeItem('codeAcademyProgress');
+            updateNavButtons();
+            updateAllProgressBars();
+            renderPathsCards();
+            showToast('👋 تم تسجيل الخروج');
+            navigateTo('home');
+        }
+
+        function saveAll() {
+            localStorage.setItem('codeAcademyUser', JSON.stringify(currentUser));
+            localStorage.setItem('codeAcademyProgress', JSON.stringify(userProgress));
+            const idx = allUsers.findIndex(u => u.email === currentUser.email);
+            if (idx >= 0) {
+                allUsers[idx].xp = currentUser.xp;
+                allUsers[idx].level = currentUser.level;
+                allUsers[idx].badges = currentUser.badges;
+            }
+            localStorage.setItem('codeAcademyAllUsers', JSON.stringify(allUsers));
+        }
+
+        // ==================== HELPERS ====================
+        function showToast(msg) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function getSampleCode(pathId, index) {
+            const samples = {
+                web: [
+                    '<!DOCTYPE html>\n<html>\n<head><title>صفحتي</title></head>\n<body>\n  <h1>مرحبًا بالعالم!</h1>\n  <p>هذه أول صفحة ويب لي.</p>\n</body>\n</html>',
+                    '<header>\n  <nav>\n    <a href="#">الرئيسية</a>\n    <a href="#">عن الموقع</a>\n  </nav>\n</header>',
+                    '<h1>عنوان رئيسي</h1>\n<h2>عنوان فرعي</h2>\n<p>فقرة نصية تحتوي على <strong>نص مهم</strong>.</p>',
+                    '<a href="https://example.com" target="_blank">رابط لموقع خارجي</a>\n<img src="image.jpg" alt="وصف الصورة" width="300">',
+                    '<ul>\n  <li>عنصر 1</li>\n  <li>عنصر 2</li>\n</ul>\n<table border="1">\n  <tr><td>خلية</td></tr>\n</table>',
+                ],
+            };
+            const pathSamples = samples[pathId] || samples['web'];
+            return pathSamples[index] || '';
+        }
+
+        function getExplanation(pathId, index) {
+            return 'في هذا الدرس، ستتعلم مفهومًا جديدًا خطوة بخطوة. اقرأ الشرح جيدًا، ثم جرب تعديل الكود في المحرر التفاعلي أدناه. لا تتردد في التجربة - فالتعلم بالممارسة هو أفضل طريقة لإتقان البرمجة! 🔍';
+        }
+
+        function getChallenge(pathId, index) {
+            return 'قم بتعديل الكود أعلاه لتغيير النص أو إضافة عنصر جديد. حاول تشغيل الكود ورؤية النتيجة مباشرة. الهدف هو التأكد من فهمك للمفهوم قبل الانتقال للدرس التالي.';
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        document.getElementById('hamburger').addEventListener('click', function() {
+            this.classList.toggle('active');
+            document.getElementById('navLinks').classList.toggle('open');
+        });
+
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) navbar.classList.add('scrolled');
+            else navbar.classList.remove('scrolled');
+        });
+
+        // Close mobile menu on link click
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('navLinks').classList.remove('open');
+                document.getElementById('hamburger').classList.remove('active');
+            });
+        });
+
+        // Keyboard shortcut to close modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // ==================== INITIALIZE ====================
+        init();
+        renderProjectsCards();
+        console.log('🚀 Code Academy Pro - جاهز للاستخدام!');
+        console.log('📊 الميزات: محرر أكواد تفاعلي | نظام XP | شارات | لوحة متصدرين | حفظ تلقائي');
+        console.log('💡 جرب: سجل الدخول، اختر مسارًا، وأكمل درسًا لكسب النقاط!');
+    </script>
+</body>
+</html>
